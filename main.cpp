@@ -33,8 +33,9 @@ class DoublyLinkedList{
     void addSongBeginning(const string &newSongName);
     void addSongLocation(const string &newSongName, int position);
     void deleteSongBeginning();
-    void deleteSongLocation();
+    void deleteSongLocation(int position);
     void deleteSongEnd();
+    void getTotalSong();
 };
 
 DoublyLinkedList::DoublyLinkedList(){
@@ -58,6 +59,7 @@ void DoublyLinkedList::addSong(const string &newSongName){
     else{
         DoublyLinkedNode *newNode = new DoublyLinkedNode(newSongName, NULL, current);
         current->next = newNode;
+        tail = newNode;
         current = current->next;
         
     }
@@ -94,6 +96,7 @@ void DoublyLinkedList::addSongLocation(const string &newSongName, int position){
 
         }
         if(temp != NULL){
+            totalSongs++;
             if(temp->next == NULL){
                 temp->next = newNode;
                 newNode->prev = temp;
@@ -120,7 +123,60 @@ void DoublyLinkedList::printAll(){
     
 }
 
+void DoublyLinkedList::deleteSongBeginning(){
+    DoublyLinkedNode* temp = head;
+    head = head->next;
+    head->prev = NULL;
+    delete(temp);
+    totalSongs--;
+}
 
+void DoublyLinkedList::deleteSongEnd(){
+    DoublyLinkedNode* temp = tail;
+    tail = tail->prev;
+    tail->next = NULL;
+    delete(temp);
+    totalSongs--;
+}
+
+void DoublyLinkedList::deleteSongLocation(int position){
+    if(position <0){
+        cout<<"Position should be >=0"<<endl;
+
+    }
+    else if (position == 0)
+    {
+        deleteSongBeginning();
+    }
+    else{
+        DoublyLinkedNode*temp = head;
+        for(int i = 0; i < position; i++){//Maybe need to add a case to add node at end using this function
+            if(temp != NULL)
+                temp = temp->next;
+            if(temp == NULL){
+                cout<<"Position entered is greater then current length of Playlist"<<endl;
+            }
+        }
+        if(temp!= NULL){
+            if(temp->next == NULL){
+                temp->prev->next = NULL;
+                tail->prev = temp->prev;
+                delete(temp);
+            } else{
+            
+            temp->next->prev = temp->prev;
+            temp->prev->next = temp->next;
+            delete(temp);
+            }
+            totalSongs--;
+        }
+    }
+
+}
+
+void DoublyLinkedList::getTotalSong(){
+    cout<<totalSongs<<endl;
+}
 
 int main(){
     DoublyLinkedList *testPlaylist = new DoublyLinkedList();
@@ -128,5 +184,7 @@ int main(){
     testPlaylist->addSong("Song2");
     testPlaylist->addSongBeginning("Song start");
     testPlaylist->addSongLocation("Song in between", 2);
+    testPlaylist->printAll();
+    testPlaylist->printAll();
 
 }
