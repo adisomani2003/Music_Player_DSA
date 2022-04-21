@@ -52,19 +52,18 @@ void DoublyLinkedList::getCurrentSong(){
 void DoublyLinkedList::addSong(const string &newSongName){
     if(totalSongs==0){
         head = new DoublyLinkedNode(newSongName, NULL, NULL);
-        head->next = tail;
         current = head;
 
     }
     else{
-        DoublyLinkedNode *newNode = new DoublyLinkedNode(newSongName, current->next, current);
-        current->next->prev = newNode;
+        DoublyLinkedNode *newNode = new DoublyLinkedNode(newSongName, NULL, current);
         current->next = newNode;
         current = current->next;
         
     }
     totalSongs++;
 }
+
 void DoublyLinkedList::addSongBeginning(const string &newSongName){
     DoublyLinkedNode *newNode = new DoublyLinkedNode(newSongName, head, NULL);
     head->prev = newNode;
@@ -86,7 +85,7 @@ void DoublyLinkedList::addSongLocation(const string &newSongName, int position){
     }
     else{
         DoublyLinkedNode*temp = head;
-        for(int i = 0; i < position; i++){//Maybe need to add a case to add node at end using this function
+        for(int i = 0; i < position-1; i++){//Maybe need to add a case to add node at end using this function
             if(temp != NULL)
                 temp = temp->next;
             if(temp == NULL){
@@ -95,12 +94,19 @@ void DoublyLinkedList::addSongLocation(const string &newSongName, int position){
 
         }
         if(temp != NULL){
-            temp->next = newNode->next;
-            newNode->prev = temp;
-            temp->next = newNode;
+            if(temp->next == NULL){
+                temp->next = newNode;
+                newNode->prev = temp;
+                newNode->next = NULL;
+            }
+            else{
+                temp->next->prev = newNode;
+                newNode->next = temp->next;
+                newNode->prev = temp;
+                temp->next = newNode;
+            }
         }
     }
-
 }
 
 void DoublyLinkedList::printAll(){
@@ -114,9 +120,13 @@ void DoublyLinkedList::printAll(){
     
 }
 
+
+
 int main(){
     DoublyLinkedList *testPlaylist = new DoublyLinkedList();
     testPlaylist->addSong("Song1");
     testPlaylist->addSong("Song2");
-    testPlaylist->printAll();
+    testPlaylist->addSongBeginning("Song start");
+    testPlaylist->addSongLocation("Song in between", 2);
+
 }
