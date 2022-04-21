@@ -1,20 +1,61 @@
-#include<iostream>
+#include <iomanip>
+#include <iostream>
+#include <stdlib.h>
+#include <unistd.h>
+#include <stack>
+#include <chrono>
+#include <thread>
+#include <random>
+
 using namespace std;
 
+
+void displayClock(int songlen, int seconds)
+{
+    cout <<setfill(' ') <<setw(9) <<"Song PLaying\n";
+    cout <<"| " <<setfill('0') <<setw(2) <<seconds<<"/"<<songlen <<" sec |" <<endl;
+    cout <<setfill(' ') <<setw(9) <<"-----\n";
+}
+
+void timer(int songLen)
+
+{
+    int seconds = 0;
+    while (seconds<songLen) {
+        displayClock(songLen, seconds);
+        sleep(1);
+        seconds++;
+    }
+}
+
+int generateRandomInteger(){
+    std::random_device rd;     // only used once to initialise (seed) engine
+    std::mt19937 rng(rd());    // random-number engine used (Mersenne-Twister in this case)
+    std::uniform_int_distribution<int> uni(1,9); // guaranteed unbiased
+    auto random_integer = uni(rng);
+    return random_integer;
+
+}
 
 class DoublyLinkedNode{
     public:
     string data;
     DoublyLinkedNode *next;
     DoublyLinkedNode *prev;
+    int duration;
 
     //constructor
-    DoublyLinkedNode(string data, DoublyLinkedNode *next, DoublyLinkedNode *prev);
+    DoublyLinkedNode(string data, DoublyLinkedNode *next, DoublyLinkedNode *prev, int duration);
 };
-DoublyLinkedNode::DoublyLinkedNode(string data, DoublyLinkedNode *next, DoublyLinkedNode *prev){
+
+DoublyLinkedNode::DoublyLinkedNode(string data, DoublyLinkedNode *next, DoublyLinkedNode *prev, int duration){
+    
+
+    
         this->data = data;
         this->next = next;
         this->prev = prev;
+        this->duration = duration;
     }
 
 class DoublyLinkedList{
@@ -36,6 +77,8 @@ class DoublyLinkedList{
     void deleteSongLocation(int position);
     void deleteSongEnd();
     void getTotalSong();
+    void playPlaylist();
+    void playCurrentSong();
 };
 
 DoublyLinkedList::DoublyLinkedList(){
@@ -51,13 +94,15 @@ void DoublyLinkedList::getCurrentSong(){
 }
 
 void DoublyLinkedList::addSong(const string &newSongName){
+    
+    
     if(totalSongs==0){
-        head = new DoublyLinkedNode(newSongName, NULL, NULL);
+        head = new DoublyLinkedNode(newSongName, NULL, NULL, generateRandomInteger());
         current = head;
 
     }
     else{
-        DoublyLinkedNode *newNode = new DoublyLinkedNode(newSongName, NULL, current);
+        DoublyLinkedNode *newNode = new DoublyLinkedNode(newSongName, NULL, current, generateRandomInteger());
         current->next = newNode;
         tail = newNode;
         current = current->next;
@@ -67,7 +112,7 @@ void DoublyLinkedList::addSong(const string &newSongName){
 }
 
 void DoublyLinkedList::addSongBeginning(const string &newSongName){
-    DoublyLinkedNode *newNode = new DoublyLinkedNode(newSongName, head, NULL);
+    DoublyLinkedNode *newNode = new DoublyLinkedNode(newSongName, head, NULL, generateRandomInteger());
     head->prev = newNode;
     head = newNode;
     totalSongs++;
@@ -75,7 +120,7 @@ void DoublyLinkedList::addSongBeginning(const string &newSongName){
 }
 
 void DoublyLinkedList::addSongLocation(const string &newSongName, int position){
-    DoublyLinkedNode *newNode = new DoublyLinkedNode(newSongName, NULL, NULL); //seting up NULL for now
+    DoublyLinkedNode *newNode = new DoublyLinkedNode(newSongName, NULL, NULL, generateRandomInteger()); //seting up NULL for now
     if(position <0){
         cout<<"Position should be >=0"<<endl;
 
@@ -178,13 +223,24 @@ void DoublyLinkedList::getTotalSong(){
     cout<<totalSongs<<endl;
 }
 
+
+void DoublyLinkedList::playPlaylist(){
+
+    DoublyLinkedNode* temp = head;
+    while(temp != NULL){
+        cout<<temp->data<<endl;
+        timer(temp->duration);
+        temp = temp->next;
+    }
+}
+
 int main(){
     DoublyLinkedList *testPlaylist = new DoublyLinkedList();
     testPlaylist->addSong("Song1");
     testPlaylist->addSong("Song2");
     testPlaylist->addSongBeginning("Song start");
-    testPlaylist->addSongLocation("Song in between", 2);
+    testPlaylist->addSongLocation("Song in between", 1);
     testPlaylist->printAll();
-    testPlaylist->printAll();
-
+    testPlaylist->playCurrentSong();
+    testPlaylist->playCurrentSong();
 }

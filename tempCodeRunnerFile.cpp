@@ -1,0 +1,1 @@
+testPlaylist->addSong("Song2");
