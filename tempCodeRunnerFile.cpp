@@ -1,1 +1,2 @@
-testPlaylist->addSong("Song2");
+testPlaylist->playCurrentSong();
+    // testPlaylist->playCurrentSong();

@@ -116,6 +116,7 @@ void DoublyLinkedList::addSongBeginning(const string &newSongName){
     head->prev = newNode;
     head = newNode;
     totalSongs++;
+    current = newNode;
 
 }
 
@@ -140,6 +141,7 @@ void DoublyLinkedList::addSongLocation(const string &newSongName, int position){
             }
 
         }
+
         if(temp != NULL){
             totalSongs++;
             if(temp->next == NULL){
@@ -153,6 +155,7 @@ void DoublyLinkedList::addSongLocation(const string &newSongName, int position){
                 newNode->prev = temp;
                 temp->next = newNode;
             }
+            current = newNode;
         }
     }
 }
@@ -223,6 +226,20 @@ void DoublyLinkedList::getTotalSong(){
     cout<<totalSongs<<endl;
 }
 
+void DoublyLinkedList::playCurrentSong(){
+    if(current == NULL){
+        cout<<"Playlist Over"<<endl;
+        //Add a restart option here later
+    }
+    else{
+    cout<<current->data<<endl;
+    timer(current->duration);
+    current = current->next;
+
+    }
+    
+    
+}
 
 void DoublyLinkedList::playPlaylist(){
 
@@ -240,7 +257,7 @@ int main(){
     testPlaylist->addSong("Song2");
     testPlaylist->addSongBeginning("Song start");
     testPlaylist->addSongLocation("Song in between", 1);
+    testPlaylist->getCurrentSong();
     testPlaylist->printAll();
-    testPlaylist->playCurrentSong();
-    testPlaylist->playCurrentSong();
+
 }
