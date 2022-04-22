@@ -1,3 +1,4 @@
+#include <bits/stdc++.h>
 #include <iomanip>
 #include <iostream>
 #include <stdlib.h>
@@ -36,6 +37,23 @@ int generateRandomInteger(){
     return random_integer;
 
 }
+int generateRandomIntegerForShuffle(int max){
+    std::random_device rd;     // only used once to initialise (seed) engine
+    std::mt19937 rng(rd());    // random-number engine used (Mersenne-Twister in this case)
+    std::uniform_int_distribution<int> uni(1,max); // guaranteed unbiased
+    auto random_integer = uni(rng);
+    return random_integer;
+
+}
+
+void shuffle_array(int arr[], int n)
+{
+    // To obtain a time-based seed
+    unsigned seed = 0;
+    shuffle(arr, arr + n,
+            default_random_engine(seed));
+ 
+}
 
 class DoublyLinkedNode{
     public:
@@ -70,6 +88,7 @@ class DoublyLinkedList{
     public:
     DoublyLinkedList();
     void addSong(const string &newSongName);
+    void addSong(const string &newSongName, int dur);
     void printAll();
     void getCurrentSong();
     void addSongBeginning(const string &newSongName);
@@ -81,6 +100,7 @@ class DoublyLinkedList{
     void playPlaylist();
     void playCurrentSong();
     void lastPlayed();
+    DoublyLinkedList* shufflePlaylist();
     
 };
 
@@ -106,6 +126,23 @@ void DoublyLinkedList::addSong(const string &newSongName){
     }
     else{
         DoublyLinkedNode *newNode = new DoublyLinkedNode(newSongName, NULL, current, generateRandomInteger());
+        current->next = newNode;
+        tail = newNode;
+        current = current->next;
+        
+    }
+    totalSongs++;
+}
+void DoublyLinkedList::addSong(const string &newSongName, int dur){
+    
+    
+    if(totalSongs==0){
+        head = new DoublyLinkedNode(newSongName, NULL, NULL, dur);
+        current = head;
+
+    }
+    else{
+        DoublyLinkedNode *newNode = new DoublyLinkedNode(newSongName, NULL, current, dur);
         current->next = newNode;
         tail = newNode;
         current = current->next;
@@ -263,16 +300,36 @@ void DoublyLinkedList::lastPlayed(){
 
 }
 
+DoublyLinkedList* DoublyLinkedList::shufflePlaylist(){
+    int len[totalSongs];
+    for(int i = 0; i<totalSongs;i++){
+        len[i] = i;
+    }
+    shuffle_array(len, totalSongs);
+    DoublyLinkedList *shuffledPlaylist = new DoublyLinkedList();
+    DoublyLinkedNode *temp = head;
+    for(int i = 0; i<totalSongs;i++){
+        temp = head;
+        int current = len[i];
+        for(int j =0; j<current;j++){ 
+            temp = temp->next;
+        }
+        shuffledPlaylist->addSong(temp->data, temp->duration);
+    }
+    return shuffledPlaylist;
+}
+
 int main(){
     DoublyLinkedList *testPlaylist = new DoublyLinkedList();
-    DoublyLinkedList *testPlaylist2 = new DoublyLinkedList();
     testPlaylist->addSong("Song1");
-    testPlaylist2->addSong("Song2");
+    testPlaylist->addSong("Song2");
     testPlaylist->addSongBeginning("Song start");
-    testPlaylist2->addSongBeginning("Song in between");
-    testPlaylist->playCurrentSong();
-    testPlaylist2->playCurrentSong();
-    testPlaylist->lastPlayed();
-    testPlaylist2->lastPlayed();
+    testPlaylist->addSongLocation("Song in between", 1);
+    testPlaylist->printAll();
+    // DoublyLinkedList *testPlaylist2 = ;
+    testPlaylist->shufflePlaylist()->printAll();
+    
+
+    
 
 }
