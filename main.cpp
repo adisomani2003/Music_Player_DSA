@@ -8,7 +8,7 @@
 #include <random>
 
 using namespace std;
-
+stack<string> st;
 
 void displayClock(int songlen, int seconds)
 {
@@ -65,6 +65,7 @@ class DoublyLinkedList{
     DoublyLinkedNode *head;
     DoublyLinkedNode *tail;
     int totalSongs;
+    stack<string> st;
 
     public:
     DoublyLinkedList();
@@ -79,6 +80,8 @@ class DoublyLinkedList{
     void getTotalSong();
     void playPlaylist();
     void playCurrentSong();
+    void lastPlayed();
+    
 };
 
 DoublyLinkedList::DoublyLinkedList(){
@@ -234,7 +237,9 @@ void DoublyLinkedList::playCurrentSong(){
     else{
     cout<<current->data<<endl;
     timer(current->duration);
+    st.push(current->data);
     current = current->next;
+
 
     }
     
@@ -247,17 +252,27 @@ void DoublyLinkedList::playPlaylist(){
     while(temp != NULL){
         cout<<temp->data<<endl;
         timer(temp->duration);
+        st.push(temp->data);
         temp = temp->next;
     }
 }
 
+void DoublyLinkedList::lastPlayed(){
+    cout<< st.top()<<endl;
+
+
+}
+
 int main(){
     DoublyLinkedList *testPlaylist = new DoublyLinkedList();
+    DoublyLinkedList *testPlaylist2 = new DoublyLinkedList();
     testPlaylist->addSong("Song1");
-    testPlaylist->addSong("Song2");
+    testPlaylist2->addSong("Song2");
     testPlaylist->addSongBeginning("Song start");
-    testPlaylist->addSongLocation("Song in between", 1);
-    testPlaylist->getCurrentSong();
-    testPlaylist->printAll();
+    testPlaylist2->addSongBeginning("Song in between");
+    testPlaylist->playCurrentSong();
+    testPlaylist2->playCurrentSong();
+    testPlaylist->lastPlayed();
+    testPlaylist2->lastPlayed();
 
 }
