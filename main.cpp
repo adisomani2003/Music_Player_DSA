@@ -9,7 +9,6 @@
 #include <random>
 
 using namespace std;
-stack<string> st;
 
 void displayClock(int songlen, int seconds)
 {
@@ -85,6 +84,7 @@ class DoublyLinkedList{
     DoublyLinkedNode *tail;
     int totalSongs;
     stack<string> st;
+    queue<string> qu;
 
     public:
     DoublyLinkedList();
@@ -93,17 +93,20 @@ class DoublyLinkedList{
     void printAll();
     void getCurrentSong();
     void addSongBeginning(const string &newSongName);
+    void addSongBeginning(const string &newSongName, int duration);
     void addSongLocation(const string &newSongName, int position);
+    void addSongLocation(const string &newSongName, int position, int duration);
     void deleteSongBeginning();
     void deleteSongLocation(int position);
     void deleteSongEnd();
     void getTotalSong();
     void playPlaylist();
     void playCurrentSong();
+    void playSongPosition(int position);
     void lastPlayed();
     DoublyLinkedList* shufflePlaylist();
     void sharePlaylist();
-    
+    void orderAddition();
 };
 
 DoublyLinkedList::DoublyLinkedList(){
@@ -133,6 +136,7 @@ void DoublyLinkedList::addSong(const string &newSongName){
         current = current->next;
         
     }
+    qu.push(newSongName);
     totalSongs++;
 }
 
@@ -151,6 +155,7 @@ void DoublyLinkedList::addSong(const string &newSongName, int dur){
         current = current->next;
         
     }
+    qu.push(newSongName);
     totalSongs++;
 }
 
@@ -160,14 +165,27 @@ void DoublyLinkedList::addSongBeginning(const string &newSongName){
     head = newNode;
     totalSongs++;
     current = newNode;
+    qu.push(newSongName);
+}
 
+void DoublyLinkedList::addSongBeginning(const string &newSongName, int duration){
+    DoublyLinkedNode *newNode = new DoublyLinkedNode(newSongName, head, NULL, duration);
+    head->prev = newNode;
+    head = newNode;
+    totalSongs++;
+    current = newNode;
+    qu.push(newSongName);
 }
 
 void DoublyLinkedList::addSongLocation(const string &newSongName, int position){
     DoublyLinkedNode *newNode = new DoublyLinkedNode(newSongName, NULL, NULL, generateRandomInteger()); //seting up NULL for now
     if(position <0){
         cout<<"Position should be >=0"<<endl;
-
+        return;
+    }
+    if(position>totalSongs){
+        cout<<"Position specified is out of Bounds"<<endl;
+        return;
     }
     else if (position == 0)//basically new node is head
     {
@@ -187,6 +205,52 @@ void DoublyLinkedList::addSongLocation(const string &newSongName, int position){
 
         if(temp != NULL){
             totalSongs++;
+            qu.push(newSongName);
+            if(temp->next == NULL){
+                temp->next = newNode;
+                newNode->prev = temp;
+                newNode->next = NULL;
+            }
+            else{
+                temp->next->prev = newNode;
+                newNode->next = temp->next;
+                newNode->prev = temp;
+                temp->next = newNode;
+            }
+            current = newNode;
+        }
+    }
+}
+
+void DoublyLinkedList::addSongLocation(const string &newSongName, int position, int duration){
+    DoublyLinkedNode *newNode = new DoublyLinkedNode(newSongName, NULL, NULL, duration); //seting up NULL for now
+    if(position <0){
+        cout<<"Position should be >=0"<<endl;
+        return;
+    }
+    if(position>totalSongs){
+        cout<<"Position specified is out of Bounds"<<endl;
+        return;
+    }
+    else if (position == 0)//basically new node is head
+    {
+        addSongBeginning(newSongName, duration);
+
+    }
+    else{
+        DoublyLinkedNode*temp = head;
+        for(int i = 0; i < position-1; i++){//Maybe need to add a case to add node at end using this function
+            if(temp != NULL)
+                temp = temp->next;
+            if(temp == NULL){
+                cout<<"Position entered is greater then current length of linked list"<<endl;
+            }
+
+        }
+
+        if(temp != NULL){
+            totalSongs++;
+            qu.push(newSongName);
             if(temp->next == NULL){
                 temp->next = newNode;
                 newNode->prev = temp;
@@ -233,7 +297,11 @@ void DoublyLinkedList::deleteSongEnd(){
 void DoublyLinkedList::deleteSongLocation(int position){
     if(position <0){
         cout<<"Position should be >=0"<<endl;
-
+        return;
+    }
+    if(position>totalSongs){
+        cout<<"Position specified is greater than total Songs in playlist"<<endl;
+        return;
     }
     else if (position == 0)
     {
@@ -280,10 +348,7 @@ void DoublyLinkedList::playCurrentSong(){
     st.push(current->data);
     current = current->next;
 
-
     }
-    
-    
 }
 
 void DoublyLinkedList::playPlaylist(){
@@ -297,7 +362,34 @@ void DoublyLinkedList::playPlaylist(){
     }
 }
 
+void DoublyLinkedList::playSongPosition(int position){
+    if(position>totalSongs-1){
+        cout<<"Greater than total number of songs in the playlist"<<endl;
+        return;
+    }
+    else if (position<0)
+    {
+        cout<<"Position must be greater than 0"<<endl;
+        return;
+    }
+    
+    else{
+        DoublyLinkedNode* temp = head;
+        cout<<temp->data<<endl;
+        for(int i =0; i<position;i++){
+            temp = temp->next;
+        }
+        timer(temp->duration);
+        st.push(temp->data);
+    }
+
+}
+
 void DoublyLinkedList::lastPlayed(){
+    if(st.empty()){
+        cout<<"No song played yet"<<endl;
+        return;
+    }
     cout<< st.top()<<endl;
 
 
@@ -322,10 +414,23 @@ DoublyLinkedList* DoublyLinkedList::shufflePlaylist(){
     return shuffledPlaylist;
 }
 
+void DoublyLinkedList::orderAddition(){
+    fstream fout;
+    fout.open("Order_of_Addition.csv", ios::out);
+    
+    for(int i = 0; i<totalSongs; i++){
+        string current = qu.front();
+        fout<<current<<"\n";
+        qu.pop();
+        qu.push(current);
+    }
+    fout.close();
+}
+
 void DoublyLinkedList::sharePlaylist(){
     DoublyLinkedNode* temp = head;
     fstream fout;
-    fout.open("Sharable File.csv", ios::out);
+    fout.open("Sharable_File.csv", ios::out);
     for(int i = 0; i<totalSongs; i++){
         fout<<temp->data<<","<<temp->duration<<"\n";
         temp = temp->next;
@@ -337,13 +442,9 @@ void DoublyLinkedList::sharePlaylist(){
 
 int main(){
     DoublyLinkedList *testPlaylist = new DoublyLinkedList();
-    testPlaylist->addSong("Song1");
+    testPlaylist->addSong("Song1", 7);
     testPlaylist->addSong("Song2");
     testPlaylist->addSongBeginning("Song start");
-    testPlaylist->addSongLocation("Song in between", 1);
-    testPlaylist->printAll();
-    // DoublyLinkedList *testPlaylist2 = ;
-    testPlaylist->shufflePlaylist()->printAll();
-    testPlaylist->sharePlaylist();
-
+    testPlaylist->addSongLocation("Song in between", 1, 5); //Overload this func
+    testPlaylist->playPlaylist();
 }

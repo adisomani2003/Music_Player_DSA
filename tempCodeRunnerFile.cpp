@@ -1,1 +1,1 @@
-testPlaylist-
+testPlaylist->playPlaylist();
