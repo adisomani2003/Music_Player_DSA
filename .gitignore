@@ -41,4 +41,4 @@
 # Ignore SASS config files
 .sass-cache
 
-.vscode
+.vscode/

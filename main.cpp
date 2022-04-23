@@ -49,7 +49,7 @@ int generateRandomIntegerForShuffle(int max){
 void shuffle_array(int arr[], int n)
 {
     // To obtain a time-based seed
-    unsigned seed = 0;
+    unsigned seed = generateRandomInteger();
     shuffle(arr, arr + n,
             default_random_engine(seed));
  
@@ -138,6 +138,7 @@ void DoublyLinkedList::addSong(const string &newSongName){
     }
     qu.push(newSongName);
     totalSongs++;
+    
 }
 
 void DoublyLinkedList::addSong(const string &newSongName, int dur){
@@ -157,6 +158,7 @@ void DoublyLinkedList::addSong(const string &newSongName, int dur){
     }
     qu.push(newSongName);
     totalSongs++;
+    
 }
 
 void DoublyLinkedList::addSongBeginning(const string &newSongName){
@@ -166,6 +168,7 @@ void DoublyLinkedList::addSongBeginning(const string &newSongName){
     totalSongs++;
     current = newNode;
     qu.push(newSongName);
+    
 }
 
 void DoublyLinkedList::addSongBeginning(const string &newSongName, int duration){
@@ -175,6 +178,7 @@ void DoublyLinkedList::addSongBeginning(const string &newSongName, int duration)
     totalSongs++;
     current = newNode;
     qu.push(newSongName);
+    
 }
 
 void DoublyLinkedList::addSongLocation(const string &newSongName, int position){
@@ -218,6 +222,7 @@ void DoublyLinkedList::addSongLocation(const string &newSongName, int position){
                 temp->next = newNode;
             }
             current = newNode;
+            
         }
     }
 }
@@ -263,6 +268,7 @@ void DoublyLinkedList::addSongLocation(const string &newSongName, int position, 
                 temp->next = newNode;
             }
             current = newNode;
+            
         }
     }
 }
@@ -284,6 +290,7 @@ void DoublyLinkedList::deleteSongBeginning(){
     head->prev = NULL;
     delete(temp);
     totalSongs--;
+    cout<<"Song Deleted"<<endl;
 }
 
 void DoublyLinkedList::deleteSongEnd(){
@@ -292,6 +299,7 @@ void DoublyLinkedList::deleteSongEnd(){
     tail->next = NULL;
     delete(temp);
     totalSongs--;
+    cout<<"Song Deleted"<<endl;
 }
 
 void DoublyLinkedList::deleteSongLocation(int position){
@@ -328,6 +336,7 @@ void DoublyLinkedList::deleteSongLocation(int position){
             delete(temp);
             }
             totalSongs--;
+            cout<<"Song Deleted"<<endl;
         }
     }
 
@@ -440,11 +449,138 @@ void DoublyLinkedList::sharePlaylist(){
     fout.close();
 }
 
+void printChoices(){
+    cout<<"Please enter one of the following choices:\n";
+    cout<<"1 : Add Song\n";
+    cout<<"2 : Add song with specified duration\n";
+    cout<<"3 : Add Song at beginning\n";
+    cout<<"4 : Add Song at beginning with specified duration\n";
+    cout<<"5 : Add Song at a particular position\n";
+    cout<<"6 : Add Song at a particular position with specified duration\n";
+    cout<<"7 : Delete Song at Beginning\n";
+    cout<<"8 : Delete Song at End\n";
+    cout<<"9 : Delete Song at a Specified Position\n";
+    cout<<"10 : Get Total Number of Songs in the Playlist\n";
+    cout<<"11 : Get Current Song in the Playlist\n";
+    cout<<"12 : Play Current Song\n";
+    cout<<"13 : Play Song at a specefic Position\n";
+    cout<<"14 : Play whole playlist\n";
+    cout<<"15 : Get last played Song\n";
+    cout<<"16 : Play Shuffled playlist\n";
+    cout<<"17 : Order in which songs were added\n";
+    cout<<"18 : Share Playlist\n";
+    cout<<"19 : Exit\n";
+}
 int main(){
-    DoublyLinkedList *testPlaylist = new DoublyLinkedList();
-    testPlaylist->addSong("Song1", 7);
-    testPlaylist->addSong("Song2");
-    testPlaylist->addSongBeginning("Song start");
-    testPlaylist->addSongLocation("Song in between", 1, 5); //Overload this func
-    testPlaylist->playPlaylist();
+    DoublyLinkedList List;
+    int choice = 0;
+    string songName;
+    int duration;
+    int position;
+
+    printChoices();
+    while(choice != 19){
+        cin>>choice;
+        switch(choice){
+            case 1:{
+                cout<<"Enter Songname"<<endl;
+                cin>>songName;
+                List.addSong(songName);
+                cout<<"Song Added"<<endl;
+
+                break;
+            }
+            case 2:{
+                cout<<"Enter Songname"<<endl;
+                cin>>songName;
+                cout<<"Enter Duration"<<endl;
+                cin>>duration;
+                List.addSong(songName, duration);
+                cout<<"Song Added"<<endl;
+
+                break;
+            }
+            case 3:
+                cout<<"Enter Songname"<<endl;
+                cin>>songName;
+                List.addSongBeginning(songName);
+                cout<<"Song Added"<<endl;
+
+                break;
+            case 4:
+                cout<<"Enter Songname"<<endl;
+                cin>>songName;
+                cout<<"Enter Duration"<<endl;
+                cin>>duration;
+                List.addSongBeginning(songName, duration);
+                cout<<"Song Added"<<endl;
+
+                break;
+            case 5:
+                cout<<"Enter Songname"<<endl;
+                cin>>songName;
+                cout<<"Enter Position"<<endl;
+                cin>>position;
+                List.addSongLocation(songName, position);
+                cout<<"Song Added"<<endl;
+                break;
+            case 6:
+                cout<<"Enter Songname"<<endl;
+                cin>>songName;
+                cout<<"Enter Duration"<<endl;
+                cin>>duration;
+                cout<<"Enter Position"<<endl;
+                cin>>position;
+                List.addSongLocation(songName, position, duration);
+                cout<<"Song Added"<<endl;
+                break;
+            case 7:
+                List.deleteSongBeginning();
+                break;
+            case 8:
+                List.deleteSongEnd();
+                break;
+            case 9:
+                cout<<"Enter position of the song to be deleted"<<endl;
+                cin>>position;
+                List.deleteSongLocation(position);
+                break;
+            case 10:
+                List.getTotalSong();
+                break;
+            case 11:
+                List.getCurrentSong();
+                break;
+            case 12:
+                List.playCurrentSong();
+                break;
+            case 13:
+                cout<<"Enter position of the song to be played"<<endl;
+                cin>>position;
+                List.playSongPosition(position);
+                break;
+            case 14:
+                List.playPlaylist();
+                break;
+            case 15:
+                List.lastPlayed();
+                break;
+            case 16:
+                List.shufflePlaylist()->playPlaylist();
+                break;
+            case 17:
+                List.orderAddition();
+                break;
+            case 18:
+                List.sharePlaylist();
+                break;
+            case 19:
+                cout<<"Exiting the program"<<endl;
+                break;
+            default:
+                cout<<"Not a valid entry!\n";
+                break;
+        }
+    }
+    
 }
