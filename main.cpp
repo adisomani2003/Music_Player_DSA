@@ -37,6 +37,7 @@ int generateRandomInteger(){
     return random_integer;
 
 }
+
 int generateRandomIntegerForShuffle(int max){
     std::random_device rd;     // only used once to initialise (seed) engine
     std::mt19937 rng(rd());    // random-number engine used (Mersenne-Twister in this case)
@@ -101,6 +102,7 @@ class DoublyLinkedList{
     void playCurrentSong();
     void lastPlayed();
     DoublyLinkedList* shufflePlaylist();
+    void sharePlaylist();
     
 };
 
@@ -133,6 +135,7 @@ void DoublyLinkedList::addSong(const string &newSongName){
     }
     totalSongs++;
 }
+
 void DoublyLinkedList::addSong(const string &newSongName, int dur){
     
     
@@ -319,6 +322,19 @@ DoublyLinkedList* DoublyLinkedList::shufflePlaylist(){
     return shuffledPlaylist;
 }
 
+void DoublyLinkedList::sharePlaylist(){
+    DoublyLinkedNode* temp = head;
+    fstream fout;
+    fout.open("Sharable File.csv", ios::out);
+    for(int i = 0; i<totalSongs; i++){
+        fout<<temp->data<<","<<temp->duration<<"\n";
+        temp = temp->next;
+
+
+    }
+    fout.close();
+}
+
 int main(){
     DoublyLinkedList *testPlaylist = new DoublyLinkedList();
     testPlaylist->addSong("Song1");
@@ -328,8 +344,6 @@ int main(){
     testPlaylist->printAll();
     // DoublyLinkedList *testPlaylist2 = ;
     testPlaylist->shufflePlaylist()->printAll();
-    
-
-    
+    testPlaylist->sharePlaylist();
 
 }
